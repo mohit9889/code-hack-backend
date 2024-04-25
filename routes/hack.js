@@ -112,8 +112,26 @@ router.post("/hacks/:id/comments", async (req, res) => {
     hack.comment_count += 1;
     await hack.save();
 
+    // Find the saved comment in the updated hack object
+    let savedComment;
+    if (replyTo) {
+      const parentComment = findParentComment(hack.comments, replyTo);
+      if (!parentComment) {
+        return res.status(404).json({ message: "Parent comment not found" });
+      }
+      savedComment = parentComment.replies[0];
+    } else {
+      const fetchedComment = await Hack.findById(id, {
+        comments: { $elemMatch: { comment: comment } },
+      });
+      savedComment = fetchedComment.comments[0];
+    }
+
     // Send success response
-    res.status(200).json({ message: "Comment added successfully" });
+    res.status(200).json({
+      message: "Comment added successfully",
+      comment: savedComment,
+    });
   } catch (error) {
     // Send error response if adding comment fails
     console.error("Error adding comment:", error);
@@ -202,6 +220,34 @@ const findParentComment = (comments, replyTo) => {
   }
   return null; // Parent comment not found
 };
+
+// POST Route to report a hack
+router.post("/hacks/:id/report", async (req, res) => {
+  try {
+    const hackId = req.params.id;
+    const hack = await Hack.findById(hackId);
+
+    if (!hack) {
+      return res.status(404).json({ message: "Hack not found" });
+    }
+
+    // Increment the is_reported count
+    hack.is_reported += 1;
+
+    // Calculate the offensive score with two digits after the decimal point
+    hack.offensive_score = parseFloat((hack.is_reported / 5).toFixed(2));
+
+    // Save the updated hack
+    await hack.save();
+
+    res.status(200).json({ message: "Hack reported successfully" });
+  } catch (error) {
+    console.error("Error reporting hack:", error);
+    res.status(400).json({ message: "Internal server error" });
+  }
+});
+
+module.exports = router;
 
 // GET route to retrieve all hacks
 router.get("/hacks", async (req, res) => {

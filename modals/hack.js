@@ -56,6 +56,14 @@ const HackSchema = new mongoose.Schema(
       default: 0,
     },
     comments: [CommentSchema],
+    is_reported: {
+      type: Number,
+      default: 0,
+    },
+    offensive_score: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
