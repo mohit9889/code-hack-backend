@@ -64,6 +64,10 @@ const HackSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    most_visited: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

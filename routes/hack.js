@@ -247,7 +247,30 @@ router.post("/hacks/:id/report", async (req, res) => {
   }
 });
 
-module.exports = router;
+// POST route to increase most_visited count
+router.post("/hacks/:id/visited", async (req, res) => {
+  const hackId = req.params.id;
+
+  try {
+    // Find the hack document by id
+    let hack = await Hack.findById(hackId);
+
+    if (!hack) {
+      return res.status(404).json({ message: "Hack not found" });
+    }
+
+    // Increment the most_visited count by one if the field exists, otherwise set it to 1
+    hack.most_visited = (hack.most_visited || 0) + 1;
+
+    // Save the updated hack document
+    await hack.save();
+
+    return res.status(200).json({ message: "Visited!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 // GET route to retrieve all hacks
 router.get("/hacks", async (req, res) => {
@@ -263,7 +286,7 @@ router.get("/hacks", async (req, res) => {
   }
 });
 
-// GET route to retrieve the 50 latest hacks by creation time
+// GET route to retrieve the 50 latest hacks by creation time => [NEW HACKS]
 router.get("/hacks/new", async (req, res) => {
   try {
     // Retrieve the 50 latest hacks from the database, sorted by creation time
@@ -277,7 +300,7 @@ router.get("/hacks/new", async (req, res) => {
   }
 });
 
-// GET route to retrieve hacks in descending order by like count
+// GET route to retrieve hacks in descending order by like count => [TOP HACKS]
 router.get("/hacks/top", async (req, res) => {
   try {
     // Retrieve hacks from the database, sorted by like count in descending order
@@ -288,6 +311,19 @@ router.get("/hacks/top", async (req, res) => {
   } catch (error) {
     // Send error response if retrieving hacks fails
     res.status(500).json({ message: error.message });
+  }
+});
+
+// GET route to get hacks in descending order of most_visited => [HOT HACKS]
+router.get("/hacks/hot", async (req, res) => {
+  try {
+    // Find all hack documents and sort them in descending order based on most_visited
+    const hacks = await Hack.find().sort({ most_visited: -1 });
+
+    return res.status(200).json(hacks);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
