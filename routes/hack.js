@@ -336,7 +336,7 @@ router.get("/hacks/:id", async (req, res) => {
     const hack = await Hack.findById(hackId);
 
     if (!hack) {
-      return res.status(404).json({ message: "Hack not found" });
+      return res.status(404).json({ message: "Hack not found", status: 404 });
     }
 
     // Send success response with retrieved hack
