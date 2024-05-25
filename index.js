@@ -16,6 +16,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // routers
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Hello World" });
+});
+
 app.get("/api/v1/hello-world", (req, res) => {
   res.status(200).json({ message: "Hello World" });
 });
