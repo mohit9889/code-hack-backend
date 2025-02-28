@@ -28,6 +28,10 @@ app.use((req, res, next) => {
 });
 
 // Health Check Route
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Server is running fine' });
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({ message: 'Server is running fine' });
 });
