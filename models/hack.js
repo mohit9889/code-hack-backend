@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const CommentSchema = new mongoose.Schema(
   {
@@ -17,12 +17,13 @@ const CommentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    replies: [this],
+    replies: {
+      type: [mongoose.Schema.Types.Mixed], // Allows any nested structure
+      default: [],
+    },
   },
   { timestamps: true }
 );
-
-CommentSchema.add({ replies: [CommentSchema] });
 
 const HackSchema = new mongoose.Schema(
   {
@@ -72,6 +73,6 @@ const HackSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Hack = mongoose.model("Hack", HackSchema);
+const Hack = mongoose.model('Hack', HackSchema);
 
-module.exports = Hack;
+export default Hack;

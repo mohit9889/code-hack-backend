@@ -1,13 +1,19 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-require("./database/connection");
+import express from 'express';
+import cors from 'cors';
+import logger from './utils/logger.js';
+import dotenv from 'dotenv';
+import hackRoutes from './routes/hack.js';
+import { connectDB } from './database/connection.js';
+
+// Load environment variables
+dotenv.config();
+
 const app = express();
 
-// Routes
-const hack = require("./routes/hack");
+// Connect to Database
+connectDB();
 
-// Env Variables
+// Environment Variables
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -15,17 +21,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// routers
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Hello World" });
+// Middleware to log incoming requests
+app.use((req, res, next) => {
+  logger.info(`Route Called: ${req.method} ${req.originalUrl}`);
+  next();
 });
 
-app.get("/api/v1/hello-world", (req, res) => {
-  res.status(200).json({ message: "Hello World" });
+// Health Check Route
+app.get('/health', (req, res) => {
+  res.status(200).json({ message: 'Server is running fine' });
 });
-app.use("/api/v1", hack);
 
-// Server
+// API Routes
+app.use('/api/v1', hackRoutes);
+
+// Start Server
 app.listen(PORT, () => {
-  console.log(`Server is running on PORT: ${PORT}`);
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });

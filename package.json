@@ -3,21 +3,39 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "server": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "prepare": "husky install",
+    "lint": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "author": "Mohit Rajpupt",
   "license": "ISC",
+  "lint-staged": {
+    "**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongodb": "^6.5.0",
-    "mongoose": "^8.3.2"
+    "mongoose": "^8.3.2",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "@eslint/js": "^9.21.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.5.2"
   }
 }
